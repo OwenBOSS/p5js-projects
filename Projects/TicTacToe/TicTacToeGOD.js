@@ -1,0 +1,7 @@
+class AI{
+    constructor(){;}
+
+    randomMove(){
+        
+    }
+}
