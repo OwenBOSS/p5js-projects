@@ -13,8 +13,10 @@ class Tile{
         stroke(0);
         rectMode(CENTER);
         rect(this.position.x, this.position.y, this.width, this.height);
-        if(this.player == "NONE"){ this.player = " ";}
-        text(this.player, this.position.x - 5, this.position.y+ 5);
+        var s = this.player;
+        if(this.player == "NONE"){ s = " ";}
+        textAlign(CENTER, CENTER);
+        text(s, this.position.x, this.position.y);
     }
 
     isOver(){
@@ -28,6 +30,13 @@ class Tile{
     }
 
     update(player){
-        if(this.isOver()){this.player=player;}}
+        var out = false;
+        if(this.isOver() && !this.marked){ 
+            this.player = player;
+            this.marked = true;
+            out = true;
+        }
+        else{ out = false;}
+        return out;
     }
 }
