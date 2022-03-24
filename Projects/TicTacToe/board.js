@@ -39,4 +39,27 @@ class Tile{
         else{ out = false;}
         return out;
     }
+
+    directPlace(player){
+        this.player = player;
+        this.marked = true;
+    }
+
+    undoMove(){
+        this.player = "NONE";
+        this.marked = false;
+    }
+}
+
+class Grid{
+    constructor(numHorCells, numVertCells, cellWidth, cellHeight, xOffset, yOffset){
+        var out = Array(numHorCells);
+        for(i=0; i<numHorCells; i++){
+            out[i] = new Array(numVertCells);
+            for(j=0; j<numVertCells; j++){
+                out[i][j] = new Tile(createVector(xOffset + cellWidth * i, yOffset + cellHeight * j), cellWidth, cellHeight);
+            }
+        }
+        return out;
+    }
 }

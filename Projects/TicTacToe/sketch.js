@@ -4,6 +4,9 @@ var canvasHeight = 500;
 var canvasWidth = 500;
 var offset = 100;
 var tileSize = 50;
+var gameState = "human turn"; //1) human vs human; 2) human turn; 3) ai turn-random or minimax
+var aiMode = "minimax";
+var debug = true;
 
 //Member Vars
 let grid;
@@ -11,8 +14,8 @@ var player = "X";
 var gameOver = false;
 var gameStateString = "GAME IN PROGRESS";
 let restartButton;
-var gameState = "human vs human";
 let ai;
+let gameMode;
 
 
 
@@ -23,7 +26,8 @@ function setup() {
     restartButton.mousePressed(restart);
     restartButton.position(10,10);
     grid = createGrid();
-    ai = new AI();
+    ai = new AI("O");
+    gameMode = gameState;
 }
 
 function draw() {
@@ -40,27 +44,56 @@ function draw() {
   text(gameStateString, offset + tileSize, offset - tileSize);
 }
 
+
 /*
  This is the Gameplay loop. Other loops such as the draw loop 
  only handle displaying the current game state. Thus we need only
  worry about the state of the game in this loop in terms of AI 
- and who should play.
+ and who should play... Nvm, we need some in the draw loop...
 */
 function mousePressed(){
   if(!gameOver){
     switch(gameState){
       case "human vs human":
         placePiece();
+        checkForGameOver();
         break;
       case "human turn":
-        placePiece();
+        var out = placePiece();
+        if(out) {gameState = "ai turn-" + aiMode;}
+        checkForGameOver();
+        aiTurn();
         break;
-      case "ai turn":
-        
     }
   }
+}
+
+function aiTurn(){
+  //Random move
+  if(gameState == "ai turn-random" && !gameOver){
+  var aiMove = ai.randomMove(grid);
+  if(debug)console.log(aiMove);
+  grid[aiMove.x][aiMove.y].directPlace(player);
+  }
+
+  //Minimax move
+  else if(gameState == "ai turn-minimax" && !gameOver){
+    var aiMove = ai.minimax(grid, true);
+    if(debug) console.log(aiMove);
+    grid[aiMove.x][aiMove.y].directPlace(player);
+  }
+
+  //Togle turn etc
+  if(player == "X"){ player = "O"; }
+  else if(player == "O"){ player = "X"; }
+  gameState = "human turn";
+  
+  
   checkForGameOver();
 }
+
+
+
 
 function checkForGameOver(){
   var Xs = 0;
@@ -137,14 +170,13 @@ function checkForGameOver(){
 
   //Cats game
   var cats = 0;
-  console.log(cats);
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
       if(grid[i][j].player != "NONE"){cats++;}
     }
   }
   if(cats>8){gameOver=true; handleGameOver("CAT");}
-  else{cats = 0};
+  cats = 0;
 }
 
 function handleGameOver(winner){
@@ -158,9 +190,11 @@ function placePiece() {
       if (out) {
         if (player == "X") { player = "O"; }
         else if (player == "O") { player = "X"; }
+        return true;
       }
     }
   }
+  return false;
 }
 
 function createGrid(){
@@ -178,4 +212,13 @@ function restart(){
   gameOver = false;
   grid = createGrid();
   gameStateString = "GAME IN PROGRESS";
+  player = "X";
+  switch(gameMode){
+    case "human vs human":
+      gameState = "human vs human";
+      break;
+    case "human turn":
+      gameState = "human turn";
+      break;
+  }
 }
