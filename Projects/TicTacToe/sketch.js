@@ -9,7 +9,7 @@ var numHorCells = 3;
 var numVertCells = 3;
 var gameState = "human turn"; //1) human vs human; 2) human turn; 3) ai turn-random or minimax
 var aiMode = "random";
-var debug = true;
+var debug = false;
 
 //Member Vars
 let grid;
