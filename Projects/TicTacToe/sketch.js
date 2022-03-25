@@ -8,7 +8,7 @@ var cellHeight = 50;
 var numHorCells = 3;
 var numVertCells = 3;
 var gameState = "human turn"; //1) human vs human; 2) human turn; 3) ai turn-random or minimax
-var aiMode = "random";
+var aiMode = "minimax";
 var debug = false;
 
 //Member Vars

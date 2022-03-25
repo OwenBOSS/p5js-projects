@@ -53,6 +53,13 @@ class Tile{
 
 class Grid{
     constructor(numHorCells, numVertCells, cellWidth, cellHeight, xOffset, yOffset){
+        this.numHorCells = numHorCells;
+        this.numVertCells = numVertCells;
+        this.cellWidth = cellHeight;
+        this.cellHeight = cellHeight; 
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        
         var out = Array(numHorCells);
         for(var i=0; i<numHorCells; i++){
             out[i] = new Array(numVertCells);
@@ -61,5 +68,9 @@ class Grid{
             }
         }
         return out;
+    }
+
+    copy(){
+        
     }
 }
