@@ -3,9 +3,12 @@ var fr = 60;
 var canvasHeight = 500;
 var canvasWidth = 500;
 var offset = 100;
-var tileSize = 50;
+var cellWidth = 50;
+var cellHeight = 50;
+var numHorCells = 3;
+var numVertCells = 3;
 var gameState = "human turn"; //1) human vs human; 2) human turn; 3) ai turn-random or minimax
-var aiMode = "minimax";
+var aiMode = "random";
 var debug = true;
 
 //Member Vars
@@ -41,7 +44,7 @@ function draw() {
   stroke(0);
   fill(0);
   textAlign(CENTER, CENTER);
-  text(gameStateString, offset + tileSize, offset - tileSize);
+  text(gameStateString, offset + cellWidth, offset - cellHeight);
 }
 
 
@@ -198,14 +201,7 @@ function placePiece() {
 }
 
 function createGrid(){
-  var list = new Array(3);
-  for(i=0; i<3; i++){
-    list[i]=new Array(3);
-    for(j=0; j < 3; j++){
-      list[i][j] = new Tile(createVector(offset + i * tileSize, offset + j* tileSize), tileSize, tileSize);
-    }
-  }
-  return list;
+  return new Grid(numHorCells, numVertCells, cellWidth, cellHeight, offset, offset);
 }
 
 function restart(){
