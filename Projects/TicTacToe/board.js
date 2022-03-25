@@ -54,9 +54,9 @@ class Tile{
 class Grid{
     constructor(numHorCells, numVertCells, cellWidth, cellHeight, xOffset, yOffset){
         var out = Array(numHorCells);
-        for(i=0; i<numHorCells; i++){
+        for(var i=0; i<numHorCells; i++){
             out[i] = new Array(numVertCells);
-            for(j=0; j<numVertCells; j++){
+            for(var j=0; j<numVertCells; j++){
                 out[i][j] = new Tile(createVector(xOffset + cellWidth * i, yOffset + cellHeight * j), cellWidth, cellHeight);
             }
         }
