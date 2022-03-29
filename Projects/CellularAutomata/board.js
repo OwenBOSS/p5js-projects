@@ -6,6 +6,7 @@ class Grid{
         this.offset = offset;
         this.grid = this.createGrid();
         this.nextGrid = this.createGrid();
+        
     }
 
     createGrid(){
@@ -52,6 +53,9 @@ class Grid{
         //4: Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
 
+        //The nextGrid must equal this grid
+        this.NextGridReset();
+
         //This loop gives me every cell
         for(var i = 0; i < this.width; i++){
             for(var j = 0; j < this.height; j++){
@@ -74,13 +78,19 @@ class Grid{
                 //Now we have the state of the neighboors... Time to decide your fate!
                 if(this.grid[i][j].marked){
                     //This is a live cell and thus we deal with rules 1-3
-                    if(numOfMarkedNeighbors < 3) this.grid[i][j].die(); //Fewer than 2 neighbors = die
-                    else if(numOfMarkedNeighbors > 4) this.grid[i][j].die(); //More than 3 neighbors = die
+                    if(numOfMarkedNeighbors < 3) this.nextGrid[i][j].die(); //Fewer than 2 neighbors = die
+                    else if(numOfMarkedNeighbors > 4) this.nextGrid[i][j].die(); //More than 3 neighbors = die
                 }
                 else{
                     //This cell is dead so we only deal with rule 4
-                    if(numOfMarkedNeighbors == 3) this.grid[i][j].live();
+                    if(numOfMarkedNeighbors == 3) this.nextGrid[i][j].live();
                 }
+            }
+        }
+
+        for(var i = 0; i < this.width; i++){
+            for(var j = 0; j < this.height; j++){
+                this.grid[i][j].marked = this.nextGrid[i][j].marked;
             }
         }
     }
@@ -91,6 +101,24 @@ class Grid{
                 if(floor(random(1.5))){
                     this.grid[i][j].live();
                 }
+            }
+        }
+        this.NextGridReset();
+    }
+
+    Clear(){
+        for(var i = 0; i < this.width; i++){
+            for(var j = 0; j < this.height; j++){
+                this.grid[i][j].die();
+            }
+        }
+        this.NextGridReset();
+    }
+
+    NextGridReset(){
+        for(var i = 0; i < this.width; i++){
+            for(var j = 0; j < this.height; j++){
+                this.nextGrid[i][j].marked = this.grid[i][j].marked;
             }
         }
     }
