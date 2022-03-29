@@ -1,6 +1,6 @@
 //Props
-var boardWidth = 140; //In cells
-var boardHeight = 80;
+var boardWidth = 300; //In cells
+var boardHeight = 150;
 var cellSize = 10;
 var offset = 50;
 var fr = 10;
@@ -20,8 +20,11 @@ function setup() {
   // put setup code here
   createCanvas(canvasWidth, canvasHeight);
   //frameRate(fr);
+  boardWidth = canvasWidth / cellSize;
+  boardHeight = canvasHeight / cellSize;
   board = new Grid(boardWidth, boardHeight, cellSize, offset);
   board.randomizeBoard();
+
 
   CreateButtons();
 }
