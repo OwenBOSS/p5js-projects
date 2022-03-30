@@ -1,11 +1,11 @@
 //Props
 var boardWidth = 300; //In cells
 var boardHeight = 150;
-var cellSize = 10;
+var cellSize = 1;
 var offset = 50;
 var fr = 10;
-var canvasWidth = 1800;
-var canvasHeight = 900;
+var canvasWidth = 300;
+var canvasHeight = 100;
 
 //Member vars
 let board;
@@ -20,8 +20,8 @@ function setup() {
   // put setup code here
   createCanvas(canvasWidth, canvasHeight);
   //frameRate(fr);
-  boardWidth = canvasWidth / cellSize;
-  boardHeight = canvasHeight / cellSize;
+  boardWidth = floor(canvasWidth / cellSize);
+  boardHeight = floor(canvasHeight / cellSize);
   board = new Grid(boardWidth, boardHeight, cellSize, offset);
   board.randomizeBoard();
 

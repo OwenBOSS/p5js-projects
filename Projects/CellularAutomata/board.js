@@ -131,11 +131,13 @@ class Cell{
         this.y = y * cellSize + offset;
         this.offset = offset;
         this.marked = false;
+        this.numberOfMarkedNeighbors;
     }
 
     ShowCell(){
+        noStroke();
         if(this.marked){ fill(100); }
-        else { fill(256); }
+        else { fill(50); }
         rect(this.x, this.y, this.cellSize);
     }
 
