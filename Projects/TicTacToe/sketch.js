@@ -231,6 +231,7 @@ function restart(){
 }
 
 function AiStart(){
+  restart();
   gameState = "ai turn-" + aiMode;
   player = ai.aiPlayer;
   aiTurn();
