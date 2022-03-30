@@ -28,8 +28,10 @@ function setup() {
     restartButton = createButton("RESET");
     restartButton.mousePressed(restart);
     restartButton.position(10,10);
+
+
     grid = createGrid();
-    ai = new AI("O");
+    ai = new AI("O", grid);
     gameMode = gameState;
 }
 
@@ -81,7 +83,7 @@ function aiTurn(){
 
   //Minimax move
   else if(gameState == "ai turn-minimax" && !gameOver){
-    var aiMove = ai.minimax(grid, true);
+    var aiMove = ai.minimax(true, 0);
     if(debug) console.log(aiMove);
     grid[aiMove.x][aiMove.y].directPlace(player);
   }
@@ -178,7 +180,7 @@ function checkForGameOver(){
       if(grid[i][j].player != "NONE"){cats++;}
     }
   }
-  if(cats>8){gameOver=true; handleGameOver("CAT");}
+  if(cats>8 && !gameOver){gameOver=true; handleGameOver("CAT");}
   cats = 0;
 }
 
