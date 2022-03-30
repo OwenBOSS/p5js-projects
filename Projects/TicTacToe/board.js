@@ -53,13 +53,29 @@ class Tile{
 
 class Grid{
     constructor(numHorCells, numVertCells, cellWidth, cellHeight, xOffset, yOffset){
-        var out = Array(numHorCells);
+        this.numHorCells = numHorCells;
+        this.numVertCells = numVertCells;
+        this.cellWidth = cellHeight;
+        this.cellHeight = cellHeight; 
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        
+        var arr = Array(numHorCells);
         for(var i=0; i<numHorCells; i++){
-            out[i] = new Array(numVertCells);
+            arr[i] = new Array(numVertCells);
             for(var j=0; j<numVertCells; j++){
-                out[i][j] = new Tile(createVector(xOffset + cellWidth * i, yOffset + cellHeight * j), cellWidth, cellHeight);
+                arr[i][j] = new Tile(createVector(xOffset + cellWidth * i, yOffset + cellHeight * j), cellWidth, cellHeight);
             }
         }
-        return out;
+
+        this.board = arr;
+    }
+
+    wipe(){
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                this.board[i][j].undoMove();
+            }
+        }
     }
 }

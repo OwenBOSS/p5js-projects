@@ -8,7 +8,7 @@ var cellHeight = 50;
 var numHorCells = 3;
 var numVertCells = 3;
 var gameState = "human turn"; //1) human vs human; 2) human turn; 3) ai turn-random or minimax
-var aiMode = "random";
+var aiMode = "minimax";
 var debug = false;
 
 //Member Vars
@@ -19,6 +19,8 @@ var gameStateString = "GAME IN PROGRESS";
 let restartButton;
 let ai;
 let gameMode;
+let resseting = false;
+let aiStartButton;
 
 
 
@@ -28,8 +30,14 @@ function setup() {
     restartButton = createButton("RESET");
     restartButton.mousePressed(restart);
     restartButton.position(10,10);
-    grid = createGrid();
-    ai = new AI("O");
+    
+    aiStartButton = createButton("AI Start");
+    aiStartButton.mousePressed(AiStart);
+    aiStartButton.position(100,10);
+
+
+    grid = new Grid(numHorCells, numVertCells, cellWidth, cellHeight, offset, offset);
+    ai = new AI("O", grid, debug);
     gameMode = gameState;
 }
 
@@ -38,7 +46,7 @@ function draw() {
   clear();
   for(i=0; i<3; i++){
     for(j=0; j < 3; j++){
-      grid[i][j].show();
+      grid.board[i][j].show();
     }
   }
   stroke(0);
@@ -55,7 +63,7 @@ function draw() {
  and who should play... Nvm, we need some in the draw loop...
 */
 function mousePressed(){
-  if(!gameOver){
+  if(!gameOver && !resseting){
     switch(gameState){
       case "human vs human":
         placePiece();
@@ -68,31 +76,37 @@ function mousePressed(){
         aiTurn();
         break;
     }
+  }else{
+    resseting = false;
   }
 }
 
 function aiTurn(){
+  var aiMadeMove = false;
+
   //Random move
   if(gameState == "ai turn-random" && !gameOver){
-  var aiMove = ai.randomMove(grid);
-  if(debug)console.log(aiMove);
-  grid[aiMove.x][aiMove.y].directPlace(player);
+    var aiMove = ai.randomMove(grid.board);
+    if(debug)console.log(aiMove);
+    grid.board[aiMove.x][aiMove.y].directPlace(player);
+    aiMadeMove = true;
   }
 
   //Minimax move
   else if(gameState == "ai turn-minimax" && !gameOver){
-    var aiMove = ai.minimax(grid, true);
+    var aiMove = ai.minimax(true, 0)[0];
     if(debug) console.log(aiMove);
-    grid[aiMove.x][aiMove.y].directPlace(player);
+    grid.board[aiMove.x][aiMove.y].directPlace(player);
+    aiMadeMove = true;
   }
 
+  checkForGameOver();
+
   //Togle turn etc
+  if(!aiMadeMove) return;
   if(player == "X"){ player = "O"; }
   else if(player == "O"){ player = "X"; }
   gameState = "human turn";
-  
-  
-  checkForGameOver();
 }
 
 
@@ -105,8 +119,8 @@ function checkForGameOver(){
   //Horizontal Wins
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
-      if(grid[i][j].player == "X"){Xs++;}
-      else if(grid[i][j].player == "O"){Os++;}
+      if(grid.board[i][j].player == "X"){Xs++;}
+      else if(grid.board[i][j].player == "O"){Os++;}
     }
     if(Xs<2 && Os<2){Xs = 0; Os = 0; }
     else if(Xs>2){ 
@@ -124,8 +138,8 @@ function checkForGameOver(){
   Xs = 0; Os = 0;
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
-      if(grid[j][i].player == "X"){Xs++;}
-      else if(grid[j][i].player == "O"){Os++;}
+      if(grid.board[j][i].player == "X"){Xs++;}
+      else if(grid.board[j][i].player == "O"){Os++;}
     }
     if(Xs<2 && Os<2){Xs = 0; Os = 0; }
     else if(Xs>2){ 
@@ -142,8 +156,8 @@ function checkForGameOver(){
   //Diagonal Wins top left to bottom right
   Xs = 0; Os = 0;
   for(i=0; i<3; i++){
-    if(grid[i][i].player == "X"){Xs++;}
-    else if(grid[i][i].player == "O"){Os++;}
+    if(grid.board[i][i].player == "X"){Xs++;}
+    else if(grid.board[i][i].player == "O"){Os++;}
   }
   if(Xs<2 && Os<2){Xs = 0; Os = 0; }
   else if(Xs>2){ 
@@ -159,8 +173,8 @@ function checkForGameOver(){
   //Diagonal Win: top right to bottom left
   Xs = 0; Os = 0;
   for(i=0; i<3; i++){
-    if(grid[i][2-i].player == "X"){Xs++;}
-    else if(grid[i][2-i].player == "O"){Os++;}
+    if(grid.board[i][2-i].player == "X"){Xs++;}
+    else if(grid.board[i][2-i].player == "O"){Os++;}
   }
   if(Xs>2){ 
     gameOver = true;
@@ -175,10 +189,10 @@ function checkForGameOver(){
   var cats = 0;
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
-      if(grid[i][j].player != "NONE"){cats++;}
+      if(grid.board[i][j].player != "NONE"){cats++;}
     }
   }
-  if(cats>8){gameOver=true; handleGameOver("CAT");}
+  if(cats>8 && !gameOver){gameOver=true; handleGameOver("CAT");}
   cats = 0;
 }
 
@@ -189,7 +203,7 @@ function handleGameOver(winner){
 function placePiece() {
   for (i = 0; i < 3; i++) {
     for (j = 0; j < 3; j++) {
-      var out = grid[i][j].update(player);
+      var out = grid.board[i][j].update(player);
       if (out) {
         if (player == "X") { player = "O"; }
         else if (player == "O") { player = "X"; }
@@ -200,13 +214,10 @@ function placePiece() {
   return false;
 }
 
-function createGrid(){
-  return new Grid(numHorCells, numVertCells, cellWidth, cellHeight, offset, offset);
-}
-
 function restart(){
   gameOver = false;
-  grid = createGrid();
+  resseting = true;
+  grid.wipe();
   gameStateString = "GAME IN PROGRESS";
   player = "X";
   switch(gameMode){
@@ -217,4 +228,10 @@ function restart(){
       gameState = "human turn";
       break;
   }
+}
+
+function AiStart(){
+  gameState = "ai turn-" + aiMode;
+  player = ai.aiPlayer;
+  aiTurn();
 }
