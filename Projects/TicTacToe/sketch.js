@@ -19,6 +19,7 @@ var gameStateString = "GAME IN PROGRESS";
 let restartButton;
 let ai;
 let gameMode;
+let resseting = false;
 
 
 
@@ -30,7 +31,7 @@ function setup() {
     restartButton.position(10,10);
 
 
-    grid = createGrid();
+    grid = new Grid(numHorCells, numVertCells, cellWidth, cellHeight, offset, offset);
     ai = new AI("O", grid);
     gameMode = gameState;
 }
@@ -40,7 +41,7 @@ function draw() {
   clear();
   for(i=0; i<3; i++){
     for(j=0; j < 3; j++){
-      grid[i][j].show();
+      grid.board[i][j].show();
     }
   }
   stroke(0);
@@ -57,7 +58,7 @@ function draw() {
  and who should play... Nvm, we need some in the draw loop...
 */
 function mousePressed(){
-  if(!gameOver){
+  if(!gameOver && !resseting){
     switch(gameState){
       case "human vs human":
         placePiece();
@@ -70,22 +71,24 @@ function mousePressed(){
         aiTurn();
         break;
     }
+  }else{
+    resseting = false;
   }
 }
 
 function aiTurn(){
   //Random move
   if(gameState == "ai turn-random" && !gameOver){
-  var aiMove = ai.randomMove(grid);
+  var aiMove = ai.randomMove(grid.board);
   if(debug)console.log(aiMove);
-  grid[aiMove.x][aiMove.y].directPlace(player);
+  grid.board[aiMove.x][aiMove.y].directPlace(player);
   }
 
   //Minimax move
   else if(gameState == "ai turn-minimax" && !gameOver){
     var aiMove = ai.minimax(true, 0);
     if(debug) console.log(aiMove);
-    grid[aiMove.x][aiMove.y].directPlace(player);
+    grid.board[aiMove.x][aiMove.y].directPlace(player);
   }
 
   //Togle turn etc
@@ -107,8 +110,8 @@ function checkForGameOver(){
   //Horizontal Wins
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
-      if(grid[i][j].player == "X"){Xs++;}
-      else if(grid[i][j].player == "O"){Os++;}
+      if(grid.board[i][j].player == "X"){Xs++;}
+      else if(grid.board[i][j].player == "O"){Os++;}
     }
     if(Xs<2 && Os<2){Xs = 0; Os = 0; }
     else if(Xs>2){ 
@@ -126,8 +129,8 @@ function checkForGameOver(){
   Xs = 0; Os = 0;
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
-      if(grid[j][i].player == "X"){Xs++;}
-      else if(grid[j][i].player == "O"){Os++;}
+      if(grid.board[j][i].player == "X"){Xs++;}
+      else if(grid.board[j][i].player == "O"){Os++;}
     }
     if(Xs<2 && Os<2){Xs = 0; Os = 0; }
     else if(Xs>2){ 
@@ -144,8 +147,8 @@ function checkForGameOver(){
   //Diagonal Wins top left to bottom right
   Xs = 0; Os = 0;
   for(i=0; i<3; i++){
-    if(grid[i][i].player == "X"){Xs++;}
-    else if(grid[i][i].player == "O"){Os++;}
+    if(grid.board[i][i].player == "X"){Xs++;}
+    else if(grid.board[i][i].player == "O"){Os++;}
   }
   if(Xs<2 && Os<2){Xs = 0; Os = 0; }
   else if(Xs>2){ 
@@ -161,8 +164,8 @@ function checkForGameOver(){
   //Diagonal Win: top right to bottom left
   Xs = 0; Os = 0;
   for(i=0; i<3; i++){
-    if(grid[i][2-i].player == "X"){Xs++;}
-    else if(grid[i][2-i].player == "O"){Os++;}
+    if(grid.board[i][2-i].player == "X"){Xs++;}
+    else if(grid.board[i][2-i].player == "O"){Os++;}
   }
   if(Xs>2){ 
     gameOver = true;
@@ -177,7 +180,7 @@ function checkForGameOver(){
   var cats = 0;
   for(i=0; i <3; i++){
     for(j=0;j<3;j++){
-      if(grid[i][j].player != "NONE"){cats++;}
+      if(grid.board[i][j].player != "NONE"){cats++;}
     }
   }
   if(cats>8 && !gameOver){gameOver=true; handleGameOver("CAT");}
@@ -191,7 +194,7 @@ function handleGameOver(winner){
 function placePiece() {
   for (i = 0; i < 3; i++) {
     for (j = 0; j < 3; j++) {
-      var out = grid[i][j].update(player);
+      var out = grid.board[i][j].update(player);
       if (out) {
         if (player == "X") { player = "O"; }
         else if (player == "O") { player = "X"; }
@@ -202,13 +205,10 @@ function placePiece() {
   return false;
 }
 
-function createGrid(){
-  return new Grid(numHorCells, numVertCells, cellWidth, cellHeight, offset, offset);
-}
-
 function restart(){
   gameOver = false;
-  grid = createGrid();
+  resseting = true;
+  grid.wipe();
   gameStateString = "GAME IN PROGRESS";
   player = "X";
   switch(gameMode){

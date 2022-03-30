@@ -1,7 +1,7 @@
 class AI{
   constructor(aiPlayer, grid){
       this.aiPlayer = aiPlayer;
-      this.grid = grid;
+      this.grid = grid.board;
       if(this.aiPlayer == "O"){this.humanPlayer = "X";}
       else{this.humanPlayer = "O";}
   }
@@ -16,7 +16,7 @@ class AI{
 
       for(var i = 0; i < 3; i++){
         for(var j = 0; j < 3; j++){
-          if(this.validMove(this.grid, i, j)){
+          if(this.validMove(i, j)){
             //Make the move and score the grid
             this.grid[i][j].directPlace(this.aiPlayer);
             var score = this.score(this.grid, maximizer, depth) - depth;
@@ -40,7 +40,7 @@ class AI{
 
       for(var i = 0; i < 3; i++){
         for(var j = 0; j < 3; j++){
-          if(this.validMove(this.grid, i, j)){
+          if(this.validMove(i, j)){
             //Make the move and score the grid
             this.grid[i][j].directPlace(this.humanPlayer);
             var score = this.score(this.grid, maximizer, depth) + depth;
@@ -80,8 +80,8 @@ class AI{
     //Horizontal Wins
     for(i=0; i <3; i++){
       for(j=0;j<3;j++){
-        if(grid[i][j].player == this.aiPlayer){aiScore++;}
-        else if(grid[i][j].player == this.humanPlayer){humanScore++;}
+        if(this.grid[i][j].player == this.aiPlayer){aiScore++;}
+        else if(this.grid[i][j].player == this.humanPlayer){humanScore++;}
       }
       if(aiScore<2 && humanScore<2){aiScore = 0; humanScore = 0; }
       else if(aiScore>2){ 
@@ -99,8 +99,8 @@ class AI{
     aiScore = 0; humanScore = 0;
     for(i=0; i <3; i++){
       for(j=0;j<3;j++){
-        if(grid[j][i].player == this.aiPlayer){aiScore++;}
-        else if(grid[j][i].player == this.humanPlayer){humanScore++;}
+        if(this.grid[j][i].player == this.aiPlayer){aiScore++;}
+        else if(this.grid[j][i].player == this.humanPlayer){humanScore++;}
       }
       if(aiScore<2 && humanScore<2){aiScore = 0; humanScore = 0; }
       else if(aiScore>2){ 
@@ -117,8 +117,8 @@ class AI{
     //Diagonal Wins top left to bottom right
     aiScore = 0; humanScore = 0;
     for(i=0; i<3; i++){
-      if(grid[i][i].player == this.aiPlayer){aiScore++;}
-      else if(grid[i][i].player == this.humanPlayer){humanScore++;}
+      if(this.grid[i][i].player == this.aiPlayer){aiScore++;}
+      else if(this.grid[i][i].player == this.humanPlayer){humanScore++;}
     }
     if(aiScore<2 && humanScore<2){aiScore = 0; humanScore = 0; }
     else if(aiScore>2){ 
@@ -134,8 +134,8 @@ class AI{
     //Diagonal Win: top right to bottom left
     aiScore = 0; humanScore = 0;
     for(i=0; i<3; i++){
-      if(grid[i][2-i].player == this.aiPlayer){aiScore++;}
-      else if(grid[i][2-i].player == this.humanPlayer){humanScore++;}
+      if(this.grid[i][2-i].player == this.aiPlayer){aiScore++;}
+      else if(this.grid[i][2-i].player == this.humanPlayer){humanScore++;}
     }
     if(aiScore>2){ 
       if(maximizer) out = 10;
@@ -150,7 +150,7 @@ class AI{
     var cats = 0;
     for(i=0; i <3; i++){
       for(j=0;j<3;j++){
-        if(grid[i][j].player != "NONE"){cats++;}
+        if(this.grid[i][j].player != "NONE"){cats++;}
       }
     }
     if(cats>8 && out == null){
@@ -168,26 +168,26 @@ class AI{
   }
 
 
-  randomMove(miniGrid){
+  randomMove(){
     var randomIndex = createVector(floor(random(0,2.1)), floor(random(0,2.1)));
-    if(this.validMove(miniGrid, randomIndex.x, randomIndex.y)){
+    if(this.validMove(randomIndex.x, randomIndex.y)){
         return randomIndex;
     }
     else{ 
-        randomIndex =this.randomMove(miniGrid);
+        randomIndex =this.randomMove(this.grid);
         return randomIndex;
     }
   }
 
-  validMove(grid, i, j){
-    return grid[i][j].player == "NONE";
+  validMove(i, j){
+    return this.grid[i][j].player == "NONE";
   }
 
-  numberOfValidMoves(grid){
+  numberOfValidMoves(){
     var n = 0;
     for(i=0; i<3; i++){
       for(j=0; j<3; j++){
-        if(this.validMove(grid, i, j)){n++;}
+        if(this.validMove(i, j)){n++;}
       }
     }
     return n;
