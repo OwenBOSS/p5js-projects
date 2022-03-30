@@ -20,6 +20,7 @@ let restartButton;
 let ai;
 let gameMode;
 let resseting = false;
+let aiStartButton;
 
 
 
@@ -29,10 +30,14 @@ function setup() {
     restartButton = createButton("RESET");
     restartButton.mousePressed(restart);
     restartButton.position(10,10);
+    
+    aiStartButton = createButton("AI Start");
+    aiStartButton.mousePressed(AiStart);
+    aiStartButton.position(100,10);
 
 
     grid = new Grid(numHorCells, numVertCells, cellWidth, cellHeight, offset, offset);
-    ai = new AI("O", grid);
+    ai = new AI("O", grid, debug);
     gameMode = gameState;
 }
 
@@ -77,27 +82,31 @@ function mousePressed(){
 }
 
 function aiTurn(){
+  var aiMadeMove = false;
+
   //Random move
   if(gameState == "ai turn-random" && !gameOver){
-  var aiMove = ai.randomMove(grid.board);
-  if(debug)console.log(aiMove);
-  grid.board[aiMove.x][aiMove.y].directPlace(player);
+    var aiMove = ai.randomMove(grid.board);
+    if(debug)console.log(aiMove);
+    grid.board[aiMove.x][aiMove.y].directPlace(player);
+    aiMadeMove = true;
   }
 
   //Minimax move
   else if(gameState == "ai turn-minimax" && !gameOver){
-    var aiMove = ai.minimax(true, 0);
+    var aiMove = ai.minimax(true, 0)[0];
     if(debug) console.log(aiMove);
     grid.board[aiMove.x][aiMove.y].directPlace(player);
+    aiMadeMove = true;
   }
 
+  checkForGameOver();
+
   //Togle turn etc
+  if(!aiMadeMove) return;
   if(player == "X"){ player = "O"; }
   else if(player == "O"){ player = "X"; }
   gameState = "human turn";
-  
-  
-  checkForGameOver();
 }
 
 
@@ -219,4 +228,10 @@ function restart(){
       gameState = "human turn";
       break;
   }
+}
+
+function AiStart(){
+  gameState = "ai turn-" + aiMode;
+  player = ai.aiPlayer;
+  aiTurn();
 }

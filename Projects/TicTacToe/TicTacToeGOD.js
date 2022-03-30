@@ -1,7 +1,8 @@
 class AI{
-  constructor(aiPlayer, grid){
+  constructor(aiPlayer, grid, debug){
       this.aiPlayer = aiPlayer;
       this.grid = grid.board;
+      this.debug = debug;
       if(this.aiPlayer == "O"){this.humanPlayer = "X";}
       else{this.humanPlayer = "O";}
   }
@@ -19,12 +20,8 @@ class AI{
           if(this.validMove(i, j)){
             //Make the move and score the grid
             this.grid[i][j].directPlace(this.aiPlayer);
-            var score = this.score(this.grid, maximizer, depth) - depth;
-            try {
-              this.grid[i][j].undoMove();
-            } catch (error) {
-              console.log("At depth: " + depth + ". This error occured: " + error);
-            }
+            var score = this.score(maximizer, depth) - depth;
+            this.grid[i][j].undoMove();
 
             //Update best score and move
             if(score > bestScore){
@@ -43,12 +40,8 @@ class AI{
           if(this.validMove(i, j)){
             //Make the move and score the grid
             this.grid[i][j].directPlace(this.humanPlayer);
-            var score = this.score(this.grid, maximizer, depth) + depth;
-            try {
-              this.grid[i][j].undoMove();
-            } catch (error) {
-              console.log("At depth: " + depth + ". This error occured: " + error);
-            }
+            var score = this.score(maximizer, depth) + depth;
+            this.grid[i][j].undoMove();
 
             //Update best score and move
             if(score < bestScore){
@@ -61,17 +54,14 @@ class AI{
 
     }
 
-    //If depth > 0 return the best score!
-    if(depth > 0){
-      return bestScore;
-    }
-    //If depth == 0 return the best move!
-    else if(depth == 0){
-      return bestMove;
-    }
+    var out = new Array(2);
+    out[0] = bestMove;
+    out[1] = bestScore;
+    if(this.debug) console.log("Depth: " + depth + ". Best score is: " + out[1] +". and the best move is x=" + out[0].x + ", y=" + out[0].y);
+    return out; 
   }
 
-  score(grid, maximizer, depth){
+  score(maximizer, depth){
     //If the game is over return a score
     var aiScore = 0;
     var humanScore = 0;
@@ -89,8 +79,8 @@ class AI{
         else if(!maximizer) out = -10;
       }
       else if(humanScore>2){
-        if(maximizer) out = -10;
-        else if(!maximizer) out = 10;
+        if(maximizer) out = 10;
+        else if(!maximizer) out = -10;
       }
       aiScore = 0; humanScore = 0;
     }
@@ -108,8 +98,8 @@ class AI{
         else if(!maximizer) out = -10;
       }
       else if(humanScore>2){
-        if(maximizer) out = -10;
-        else if(!maximizer) out = 10;
+        if(maximizer) out = 10;
+        else if(!maximizer) out = -10;
       }
       aiScore = 0; humanScore = 0;
     }
@@ -123,11 +113,11 @@ class AI{
     if(aiScore<2 && humanScore<2){aiScore = 0; humanScore = 0; }
     else if(aiScore>2){ 
       if(maximizer) out = 10;
-        else if(!maximizer) out = -10;
+      else if(!maximizer) out = -10;
     }
     else if(humanScore>2){
-      if(maximizer) out = -10;
-        else if(!maximizer) out = 10;
+      if(maximizer) out = 10;
+      else if(!maximizer) out = -10;
     }
   
 
@@ -139,11 +129,11 @@ class AI{
     }
     if(aiScore>2){ 
       if(maximizer) out = 10;
-        else if(!maximizer) out = -10;
+      else if(!maximizer) out = -10;
     }
     else if(humanScore>2){
-      if(maximizer) out = -10;
-        else if(!maximizer) out = 10;
+      if(maximizer) out = 10;
+      else if(!maximizer) out = -10;
     }
 
     //Cats game
@@ -163,7 +153,7 @@ class AI{
       return out;
     }
     else{ //if(out) is flase when we need to go deeper!
-      return this.minimax(!maximizer, depth + 1);
+      return this.minimax(!maximizer, depth + 1)[1];
     }
   }
 
