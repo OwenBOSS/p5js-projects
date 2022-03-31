@@ -1,0 +1,8 @@
+.p5Container{
+    position: absolute;
+}
+
+#canvas{
+    position: relative;
+    left: 20px;
+}
