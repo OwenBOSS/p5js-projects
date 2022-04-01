@@ -15,11 +15,12 @@ let bubble;
 function setup() {
   // put setup code here
   bgColor = color(50, 100, 50);
-  columnColor = color(50, 200, 50);
+  columnColor = color(255, 60, 40);
 
   //canvas = document.getElementById("canvas");
   resizeCanvas(windowScale * windowWidth, windowScale * windowHeight);
-  bubble = new ListObject(columnWidth, columnColor, windowScale, windowHeight, windowWidth); 
+  bubble = new ListObject(columnWidth, columnColor, windowScale, windowHeight, windowWidth);
+  bubble.PerlinStart();
 }
 
 function draw() {
