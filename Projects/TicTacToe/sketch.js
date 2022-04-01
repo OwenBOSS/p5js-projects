@@ -1,7 +1,7 @@
 //Props
 var fr = 60;
 var canvasHeight = 500;
-var canvasWidth = 500;
+var canvasWidth = 800;
 var offset = 100;
 var cellWidth = 50;
 var cellHeight = 50;
@@ -27,6 +27,7 @@ let aiStartButton;
 function setup() {
   // put setup code here
     createCanvas(canvasWidth, canvasHeight);
+    background(155);
     restartButton = createButton("RESET");
     restartButton.mousePressed(restart);
     restartButton.position(10,10);
@@ -44,6 +45,9 @@ function setup() {
 function draw() {
   // put drawing code here
   clear();
+
+  Visualization();
+
   for(i=0; i<3; i++){
     for(j=0; j < 3; j++){
       grid.board[i][j].show();
@@ -55,6 +59,14 @@ function draw() {
   text(gameStateString, offset + cellWidth, offset - cellHeight);
 }
 
+
+function Visualization() {
+  fill(color(50,200,50));
+  rectMode(CORNER);
+  rect(offset + cellWidth * 4, 50, 10, 300);
+
+  ai.Visualize();
+}
 
 /*
  This is the Gameplay loop. Other loops such as the draw loop 
@@ -94,6 +106,7 @@ function aiTurn(){
 
   //Minimax move
   else if(gameState == "ai turn-minimax" && !gameOver){
+    ai.vizList.length = 0;
     var aiMove = ai.minimax(true, 0)[0];
     if(debug) console.log(aiMove);
     grid.board[aiMove.x][aiMove.y].directPlace(player);

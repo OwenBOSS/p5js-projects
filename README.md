@@ -17,4 +17,5 @@ _ Ball Art
 _ TicTacToe with minimax
 _ Driving \* Bubble Sort visualization
 
-TCITACTOE VISUALIZATION
+TICTACTOE VISUALIZATION
+some how show % chance of winning

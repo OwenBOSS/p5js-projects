@@ -5,6 +5,8 @@ class AI{
       this.debug = debug;
       if(this.aiPlayer == "O"){this.humanPlayer = "X";}
       else{this.humanPlayer = "O";}
+
+      this.vizList = [];
   }
 
   minimax(maximizer, depth){
@@ -150,6 +152,7 @@ class AI{
 
     //If the game is not over call minimax again!
     if(out != null){ //if(out) is true when the game has ended, and thus we simply return out
+      this.vizList.push(out);
       return out;
     }
     else{ //if(out) is flase when we need to go deeper!
@@ -181,5 +184,19 @@ class AI{
       }
     }
     return n;
+  }
+
+  Visualize(){
+    var length = this.vizList.length;
+    var wins = 0;
+
+    for(var i = 0; i < length; i++){
+      if(this.vizList[i] >  0) wins++;
+    }
+
+    var h = 300 * (wins / length);
+
+    fill(color(200,50,50));
+    rect(offset + cellWidth * 4, 50 , 10, h);
   }
 }

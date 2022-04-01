@@ -1,11 +1,9 @@
 //Props
-var boardWidth = 300; //In cells
-var boardHeight = 150;
-var cellSize = 1;
+var cellSize = 10;
 var offset = 50;
 var fr = 10;
-var canvasWidth = 300;
-var canvasHeight = 100;
+var canvasWidth = 1200;
+var canvasHeight = 600;
 
 //Member vars
 let board;
