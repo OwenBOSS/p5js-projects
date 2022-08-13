@@ -18,7 +18,7 @@ class Board {
         //For DEMO only, result does not follow rules of Sudoku
         for (let i = 0; i < out.length; i++) {
             for (let j = 0; j < out[0].length; j++) {
-                //out[i][j] = 0;
+                out[i][j] = 0;
             }
         }
 
@@ -65,11 +65,35 @@ class Board {
         switch (dificulty) {
             //Easy - randomly generate
             case 1:
+                //Randomly fill the diagonal
                 for (let k = 0; k < 3; k++) {
                     var potentialNumbers = this.GenerateRandomNumList(9);
                     for (let i = 0; i < this.board.length / 3; i++) {
                         for (let j = 0; j < this.board[0].length / 3; j++) {
                             this.board[3*k + i][3*k + j] = potentialNumbers.pop();
+                        }
+                    }
+                }
+
+                //Pick an off diagonal to fill in
+                var offDiags = this.shuffle([[1,0], [2,0], [0,1], [2,1], [0,2], [1,2]]);
+                for(let k = 0; k < 6; k++){
+                    var selectedOffGrid = offDiags.pop();
+                    var potentialNumbers = this.GenerateRandomNumList(9)
+
+                    //Fill in that diagonal
+                    while (potentialNumbers.length > 0) {
+                        var selectedNum = potentialNumbers.pop();
+
+                        var placed = false;
+                        while (!placed) { 
+                            var pos = [floor(random(0,3)) + selectedOffGrid[0] * 3, floor(random(0,3)) + selectedOffGrid[1] * 3];
+                            
+                            if(this.ValidPos(selectedNum, pos)){
+                                this.board[pos[0]][pos[1]] = selectedNum;
+                                placed = true;
+                            }
+                            console.log(selectedOffGrid, pos, selectedNum, placed);
                         }
                     }
                 }
@@ -89,6 +113,7 @@ class Board {
     }
 
     shuffle(arr){
+        //Shuffle a given array "arr"
         var m = arr.length, t, i;
 
         //While there are elements to shuffle
@@ -103,5 +128,25 @@ class Board {
         }
 
         return arr;
+    }
+
+    ValidPos(num, pos){
+        //given a number and a posistion return if the number can be placed there...
+        var valid = true;
+
+        //Check if empty...
+        if(this.board[pos[0]][pos[1]] > 0) valid = false;
+
+        //Check horizontally
+        for (let i = 0; i < this.board.length; i++) {
+           if(this.board[i][pos[1]] == num) valid = false; 
+        }
+
+        //Check vertically
+        for (let j = 0; j < this.board.length; j++) {
+            if(this.board[pos[0]][j] == num) valid = false; 
+        }
+
+        return valid;
     }
 }
