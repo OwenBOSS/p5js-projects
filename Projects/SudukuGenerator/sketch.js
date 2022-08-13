@@ -1,7 +1,7 @@
 //Parameters
-var topLeft = 20;
-var tileWidth = 25;
-var tileHeight = 25;
+var topLeft = 40;
+var tileWidth = 30;
+var tileHeight = 30;
 var strkWeight = 3;
 
 //Member vars

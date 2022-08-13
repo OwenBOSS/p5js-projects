@@ -1,0 +1,2 @@
+TODO
+* Make the size of the board dynamic
