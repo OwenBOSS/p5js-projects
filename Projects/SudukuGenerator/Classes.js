@@ -18,7 +18,7 @@ class Board {
         //For DEMO only, result does not follow rules of Sudoku
         for (let i = 0; i < out.length; i++) {
             for (let j = 0; j < out[0].length; j++) {
-                out[i][j] = 0;
+                //out[i][j] = 0;
             }
         }
 
@@ -64,6 +64,7 @@ class Board {
     RandomizeBoard(dificulty){
         switch (dificulty) {
             //Easy - randomly generate
+            //There aren't valid positions for all the numbers...
             case 1:
                 //Randomly fill the diagonal
                 for (let k = 0; k < 3; k++) {
@@ -93,7 +94,7 @@ class Board {
                                 this.board[pos[0]][pos[1]] = selectedNum;
                                 placed = true;
                             }
-                            console.log(selectedOffGrid, pos, selectedNum, placed);
+                            //console.log(selectedOffGrid, pos, selectedNum, placed);
                         }
                     }
                 }
@@ -135,7 +136,7 @@ class Board {
         var valid = true;
 
         //Check if empty...
-        if(this.board[pos[0]][pos[1]] > 0) valid = false;
+        //if(this.board[pos[0]][pos[1]] != null) valid = false;
 
         //Check horizontally
         for (let i = 0; i < this.board.length; i++) {
