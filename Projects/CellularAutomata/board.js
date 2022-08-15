@@ -7,6 +7,8 @@ class Grid{
         this.grid = this.createGrid();
         this.nextGrid = this.createGrid();
         
+        this.updatedList = [];
+        this.aliveList = [];
     }
 
     createGrid(){
@@ -24,9 +26,6 @@ class Grid{
     }
 
     Show(){
-        rectMode(CENTER);
-        noFill(256);
-        stroke(0);
         
         for(var i = 0; i < this.width; i++){
             for(var j = 0; j < this.height; j++){
@@ -35,11 +34,44 @@ class Grid{
         }
     }
 
+    TargetedShow(){
+        
+        var length = this.updatedList.length;
+
+        for(var i = 0; i <length; i++){
+            //var cell = this.updatedList.pop();
+            //cell.ShowCell();
+
+            //The commented out code is replaced by this one line!
+            this.updatedList.pop().ShowCell();
+        }
+    }
+
+    AliveShow(){
+        for(var i = 0; i < this.width; i++){
+            for(var j = 0; j < this.height; j++){
+                if(this.grid[i][j].marked) {
+                    this.grid[i][j].ShowAliveCell();
+                }
+            }
+        }
+    }
+
+    TargetedAliveShow(){
+        var length = this.updatedList.length;
+
+        for(var i = 0; i <length; i++){
+            var cell = this.updatedList.pop();
+            if(cell.marked) cell.ShowAliveCell();
+        }
+    }
+
     UserInput(){
         for(var i = 0; i < this.width; i++){
             for(var j = 0; j < this.height; j++){
                 if(this.grid[i][j].isOver()){
                     this.grid[i][j].toggleMark();
+                    this.grid[i][j].ShowCell();
                 }
             }
         }
@@ -59,6 +91,8 @@ class Grid{
         //This loop gives me every cell
         for(var i = 0; i < this.width; i++){
             for(var j = 0; j < this.height; j++){
+                //Decide if we need to redisplay this cell on update;
+                var addToUpdate = false;
 
                 //Declare the control variables
                 var numOfMarkedNeighbors = 0;
@@ -78,13 +112,28 @@ class Grid{
                 //Now we have the state of the neighboors... Time to decide your fate!
                 if(this.grid[i][j].marked){
                     //This is a live cell and thus we deal with rules 1-3
-                    if(numOfMarkedNeighbors < 3) this.nextGrid[i][j].die(); //Fewer than 2 neighbors = die
-                    else if(numOfMarkedNeighbors > 4) this.nextGrid[i][j].die(); //More than 3 neighbors = die
+                    if(numOfMarkedNeighbors < 3) {
+                        this.nextGrid[i][j].die(); //Fewer than 2 neighbors = die
+                        addToUpdate = true; //This cell switched from: alaive -> dead
+                    }
+                    else if(numOfMarkedNeighbors > 4) {
+                        this.nextGrid[i][j].die(); //More than 3 neighbors = die
+                        addToUpdate = true; //This cell switched from: alaive -> dead
+                    }
                 }
                 else{
                     //This cell is dead so we only deal with rule 4
-                    if(numOfMarkedNeighbors == 3) this.nextGrid[i][j].live();
+                    if(numOfMarkedNeighbors == 3) {
+                        this.nextGrid[i][j].live(); //3 neighbors = live
+                        addToUpdate = true; // This cell switched from: aldeadaive -> alaive
+                    }
                 }
+
+                //If the cell was updated add it to the update list
+                if(addToUpdate) this.updatedList.push(this.grid[i][j]);
+
+                //If the cell is alive add to alive list
+                if(this.grid[i][j].marked) this.aliveList.push(this.grid[i][j]);
             }
         }
 
@@ -135,9 +184,14 @@ class Cell{
     }
 
     ShowCell(){
-        noStroke();
-        if(this.marked){ fill(100); }
-        else { fill(50); }
+        rectMode(CENTER);
+        if(this.marked){ fill(100); noStroke(100); }
+        else { fill(50); noStroke(50); }
+        rect(this.x, this.y, this.cellSize);
+    }
+
+    ShowAliveCell(){
+        fill(100); stroke(100); 
         rect(this.x, this.y, this.cellSize);
     }
 
