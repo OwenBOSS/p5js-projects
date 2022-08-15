@@ -76,10 +76,14 @@ class Board {
                     }
                 }
 
-                //Pick an off diagonal to fill in
-                var offDiags = this.shuffle([[1,0], [2,0], [0,1], [2,1], [0,2], [1,2]]);
-                for(let k = 0; k < 6; k++){
+                //Fill in off diagonals
+                //list off diags
+                var offDiags = [[1,0], [2,0], [0,1], [2,1], [0,2], [1,2]];
+                //Loops through each off diagonal
+                for(let k = 0; k < offDiags.length; k++){
+                    //Pick an off diagonal to fill in
                     var selectedOffGrid = offDiags.pop();
+                    //Create randomized lists of numbers to fill in to the grid
                     var potentialNumbers = this.GenerateRandomNumList(9)
 
                     //Fill in that diagonal
@@ -94,7 +98,7 @@ class Board {
                                 this.board[pos[0]][pos[1]] = selectedNum;
                                 placed = true;
                             }
-                            //console.log(selectedOffGrid, pos, selectedNum, placed);
+                            console.log(selectedOffGrid, pos, selectedNum, placed);
                         }
                     }
                 }
@@ -136,7 +140,7 @@ class Board {
         var valid = true;
 
         //Check if empty...
-        //if(this.board[pos[0]][pos[1]] != null) valid = false;
+        if(this.board[pos[0]][pos[1]] != null) valid = false;
 
         //Check horizontally
         for (let i = 0; i < this.board.length; i++) {
