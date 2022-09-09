@@ -7,6 +7,13 @@ class Board {
 
         this.board = this.CreateBoard();
         this.RandomizeBoard(1);
+
+        this.maxDepth = 16;
+
+        this.Solver(0);
+        /*for (let i = 0; i < this.maxDepth; i++) {
+            this.Solver();
+        }*/
     }
 
     CreateBoard(){
@@ -18,7 +25,7 @@ class Board {
         //For DEMO only, result does not follow rules of Sudoku
         for (let i = 0; i < out.length; i++) {
             for (let j = 0; j < out[0].length; j++) {
-                //out[i][j] = 0;
+                out[i][j] = 0;
             }
         }
 
@@ -44,7 +51,9 @@ class Board {
                 fill(80);
                 textSize(11);
                 //Draw contents
-                text(this.board[i][j], this.topLeft + i * this.tileWidth + this.tileWidth * 0.27, this.topLeft + j * this.tileHeight + this.tileHeight * 0.7)
+                var char = this.board[i][j];
+                if(char == null) char = "";
+                text(char, this.topLeft + i * this.tileWidth + this.tileWidth * 0.27, this.topLeft + j * this.tileHeight + this.tileHeight * 0.7)
             }
         }
 
@@ -72,33 +81,6 @@ class Board {
                     for (let i = 0; i < this.board.length / 3; i++) {
                         for (let j = 0; j < this.board[0].length / 3; j++) {
                             this.board[3*k + i][3*k + j] = potentialNumbers.pop();
-                        }
-                    }
-                }
-
-                //Fill in off diagonals
-                //list off diags
-                var offDiags = [[1,0], [2,0], [0,1], [2,1], [0,2], [1,2]];
-                //Loops through each off diagonal
-                for(let k = 0; k < offDiags.length; k++){
-                    //Pick an off diagonal to fill in
-                    var selectedOffGrid = offDiags.pop();
-                    //Create randomized lists of numbers to fill in to the grid
-                    var potentialNumbers = this.GenerateRandomNumList(9)
-
-                    //Fill in that diagonal
-                    while (potentialNumbers.length > 0) {
-                        var selectedNum = potentialNumbers.pop();
-
-                        var placed = false;
-                        while (!placed) { 
-                            var pos = [floor(random(0,3)) + selectedOffGrid[0] * 3, floor(random(0,3)) + selectedOffGrid[1] * 3];
-                            
-                            if(this.ValidPos(selectedNum, pos)){
-                                this.board[pos[0]][pos[1]] = selectedNum;
-                                placed = true;
-                            }
-                            console.log(selectedOffGrid, pos, selectedNum, placed);
                         }
                     }
                 }
@@ -140,7 +122,7 @@ class Board {
         var valid = true;
 
         //Check if empty...
-        if(this.board[pos[0]][pos[1]] != null) valid = false;
+        //if(this.board[pos[0]][pos[1]] != (0 || null)) valid = false;
 
         //Check horizontally
         for (let i = 0; i < this.board.length; i++) {
@@ -152,6 +134,39 @@ class Board {
             if(this.board[pos[0]][j] == num) valid = false; 
         }
 
+        //Check box
+        var xMin = floor(pos[0] / 3) * 3;
+        var yMin = floor(pos[1] / 3)  * 3;
+        for(let i = xMin; i < xMin + 3; i++){
+            for (let j = yMin; j < yMin + 3; j++) {
+                if(this.board[i][j] == num) valid = false;
+            }
+        }
+
         return valid;
+    }
+
+    Solver(depth){
+        console.log(depth);
+        //Loop through the posistions
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+
+                if(this.board[i][j] == (null || 0)){
+                    var possibleNumbers = this.GenerateRandomNumList(9);
+                    for (let n = 0; n < 9; n++) {
+                        var selected = possibleNumbers.pop();
+
+                        if(this.ValidPos(selected, [i,j])){
+                            this.board[i][j] = selected;
+                            this.Solver(depth + 1);
+                            //if(depth > 0) this.board[i][j] = 0;
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+        return;
     }
 }
